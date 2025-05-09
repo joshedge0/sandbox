@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
 	import { Plus, Trash2 } from '@lucide/svelte';
 
-    interface ColorPalette {
+	interface ColorPalette {
 		c1: string;
 		c2: string;
 		c3: string;
@@ -22,20 +21,22 @@
 	onMount(() => {
 		document.addEventListener('mousedown', handleClick);
 		colorPalettesString = localStorage.getItem('colorPalettes');
-		if (colorPalettesString && colorPalettesString!=='[]') {
+		if (colorPalettesString && colorPalettesString !== '[]') {
 			try {
 				colorPalettes = JSON.parse(colorPalettesString) as ColorPalette[];
 			} catch (e) {
 				console.error('Error parsing color palettes:', e);
 			}
 		} else {
-			colorPalettes = [{
-			c1: '#EEE',
-			c2: '#BBB',
-			c3: '#777',
-			c4: '#444',
-			c5: '#111'
-		}]; 
+			colorPalettes = [
+				{
+					c1: '#F2F7E9',
+					c2: '#CCDDB4',
+					c3: '#B2D187',
+					c4: '#799C4A',
+					c5: '#4C593A'
+				}
+			];
 		}
 	});
 
@@ -48,6 +49,7 @@
 	let editingIndex: number;
 	let editingKey: keyof ColorPalette;
 	let firstClick = false;
+	let showAlert = false;
 
 	const handleColorClick = (
 		e: MouseEvent | KeyboardEvent,
@@ -104,13 +106,13 @@
 		}
 	};
 
-	const handleAddPalette = () => {
+	const handleAdd = () => {
 		const newPalette: ColorPalette = {
-			c1: '#EEE',
-			c2: '#BBB',
-			c3: '#777',
-			c4: '#444',
-			c5: '#111'
+			c1: randomHexGen('FFFFFF', 'BBBBBB'),
+			c2: randomHexGen('BBBBBB', '777777'),
+			c3: randomHexGen('777777', '444444'),
+			c4: randomHexGen('444444', '111111'),
+			c5: randomHexGen('111111', '000000'),
 		};
 		colorPalettes = [...colorPalettes, newPalette];
 	};
@@ -123,14 +125,28 @@
 
 	const handleSave = () => {
 		localStorage.setItem('colorPalettes', JSON.stringify(colorPalettes));
-		// some form of confirmation
+		showAlert = true;
+		setTimeout(() => {
+			showAlert = false;
+		}, 2000);
+	};
+
+	const randomHexGen = (min: string, max: string): string => {
+		const minInt = parseInt(min, 16);
+		const maxInt = parseInt(max, 16);
+
+		// Generate random integer in range
+		const rand = Math.floor(Math.random() * (maxInt - minInt + 1)) + minInt;
+
+		// Convert back to hex and pad with zeros
+		return `#${rand.toString(16).padStart(6, '0')}`;
 	};
 </script>
 
 <div class="flex flex-col">
 	<h1 class="mx-auto text-3xl font-bold mt-[40px]">colors</h1>
 
-	<div class="w-[50%] mx-auto pt-2 pb-[100px] border-solid">
+	<div class="w-[50%] mx-auto pt-2 pb-4 border-solid">
 		{#each colorPalettes as palette, index}
 			<div class="my-2">
 				<h1 class="text-l font-medium">Color Palette #{index + 1}</h1>
@@ -151,7 +167,7 @@
 								<input
 									class="input w-[100px] text-center"
 									type="text"
-									maxLength={6}
+									maxLength={7}
 									value={palette[colorKey]}
 									onchange={(e) => handleInputChange(e, index, colorKey)}
 								/>
@@ -162,10 +178,32 @@
 				</div>
 			</div>
 		{/each}
-		<button class="btn w-full" onclick={handleAddPalette}><Plus />Add Palette</button>
+		<button class="btn w-full" onclick={handleAdd}><Plus />Add Palette</button>
 		<button class="btn btn-success mt-4 w-full" onclick={handleSave}>Save</button>
 	</div>
 </div>
+
+{#if showAlert}
+	<div
+		role="alert"
+		class="alert alert-success w-[50%] mx-auto transform -translate-x-1/2 transition-all opacity-100 animate-fadeOut"
+	>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			class="h-6 w-6 shrink-0 stroke-current"
+			fill="none"
+			viewBox="0 0 24 24"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+			/>
+		</svg>
+		<span>Save Complete!</span>
+	</div>
+{/if}
 
 <ColorPicker
 	{color}
@@ -174,3 +212,21 @@
 	bind:pickerPosition
 	setRef={(el) => (pickerElement = el)}
 />
+
+<style>
+	@keyframes fadeOut {
+		0% {
+			opacity: 1;
+		}
+		90% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+
+	.animate-fadeOut {
+		animation: fadeOut 1.5s ease-in-out forwards;
+	}
+</style>
