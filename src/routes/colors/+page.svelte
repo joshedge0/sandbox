@@ -106,7 +106,6 @@
     }
 
     const handleDelete = (index: number) => {
-        console.log('deleted', index)
         let updatePalettes = [...colorPalettes]
         updatePalettes.splice(index, 1);
         colorPalettes = [...updatePalettes]
