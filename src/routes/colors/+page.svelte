@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
+    import { Plus, Trash2 } from '@lucide/svelte';
 
 	onMount(async () => {
 		await import('vanilla-colorful');
@@ -20,11 +21,7 @@
 
 	const initialColorPalettes: ColorPalette[] = [
 		{ c1: '#37413A', c2: '#5c7f71', c3: '#DFECE4', c4: '#DFDE9B', c5: '#E15D44' },
-		{ c1: '#4a3c34', c2: '#B9714F', c3: '#C5A253', c4: '#D5CB9F', c5: '#E1907F' },
-		{ c1: '#3d2d39', c2: '#958B84', c3: '#CCC6BB', c4: '#A2789C', c5: '#7C2946' },
-		{ c1: '#00819D', c2: '#87C2D4', c3: '#DDE5ED', c4: '#F9B5A9', c5: '#E8593c' },
-		{ c1: '#2C5234', c2: '#BBC592', c3: '#E6EDE4', c4: '#C5AECF', c5: '#404466' },
-		{ c1: '#204402', c2: '#7BB369', c3: '#CCDDB4', c4: '#f7f2b0', c5: '#ad507f' }
+		{ c1: '#4a3c34', c2: '#B9714F', c3: '#C5A253', c4: '#D5CB9F', c5: '#E1907F' }
 	];
 
 	const colorKeys: (keyof ColorPalette)[] = ['c1', 'c2', 'c3', 'c4', 'c5'];
@@ -66,10 +63,21 @@
 				...updatedPalettes[editingIndex],
 				[editingKey]: newColor
 			};
-			colorPalettes = updatedPalettes;
+			colorPalettes = [...updatedPalettes];
 			color = newColor;
 		}
 	};
+
+    const handleInputChange = (
+    e: Event,
+    index: number,
+    key: keyof ColorPalette
+  ) => {
+    const inputValue = (e.target as HTMLInputElement).value.toUpperCase().replace(/[^0-9A-F]/g, "");
+    const updatedPalettes = [...colorPalettes];
+    updatedPalettes[index][key] = `#${inputValue}`;
+    colorPalettes = [...updatedPalettes];
+  };
 
 	const handleClick = (e: MouseEvent) => {
 		const target = e.target as HTMLDivElement;
@@ -85,17 +93,40 @@
 			showPicker = false;
 		}
 	};
+
+    const handleAddPalette = () => {
+        const newPalette: ColorPalette = {
+            c1: '#EEE',
+            c2: '#BBB',
+            c3: '#777',
+            c4: '#444',
+            c5: '#111'
+        };
+        colorPalettes = [...colorPalettes, newPalette];
+    }
+
+    const handleDelete = (index: number) => {
+        console.log('deleted', index)
+        let updatePalettes = [...colorPalettes]
+        updatePalettes.splice(index, 1);
+        colorPalettes = [...updatePalettes]
+    }
+
+    const handleSave = () => {
+        console.log('saved')
+    }
+
 </script>
+<div class="flex flex-col">
+<h1 class="mx-auto text-3xl font-bold mt-[40px]">colors</h1>
 
-<h1>colors</h1>
-
-<div class="card w-[50%] mx-auto pt-8 pb-[100px] border-solid">
+<div class="w-[50%] mx-auto pt-2 pb-[100px] border-solid">
 	{#each colorPalettes as palette, index}
-		<div class="card-body">
-			<h1 class="card-title">Color Palette #{index + 1}</h1>
-			<div class="flex justify-around py-6 flex-row">
+		<div class="my-2">
+			<h1 class="text-l font-medium">Color Palette #{index + 1}</h1>
+			<div class="flex flex-row justify-around items-center py-6 ">
 				{#each colorKeys as colorKey}
-					<div>
+					<div class="pr-4 flex flex-col items-center">
 						<div
 							class="w-[100px] h-[100px] rounded"
 							style="background-color: {palette[colorKey]}"
@@ -107,19 +138,23 @@
 						></div>
 
 						<div class="flex items-center space-x-2 mt-2">
-							<span class="text-sm font-medium">#</span>
 							<input
-								class="input"
+								class="input w-[100px] text-center"
 								type="text"
 								maxLength={6}
-								value={palette[colorKey].replace('#', '')}
+								value={palette[colorKey]}
+                                onchange={(e) => handleInputChange(e, index, colorKey)}
 							/>
 						</div>
 					</div>
 				{/each}
+                <Trash2 class="mb-[40px] w-[25px] h-[25px]" onclick={() => handleDelete(index)}/>
 			</div>
 		</div>
 	{/each}
+    <button class="btn w-full" onclick={handleAddPalette}><Plus />Add Palette</button>
+    <button class="btn btn-success mt-4 w-full" onclick={handleSave}>Save</button>
+</div>
 </div>
 
 <ColorPicker
