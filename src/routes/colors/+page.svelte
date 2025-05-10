@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
-	import { Plus, Trash2 } from '@lucide/svelte';
+	import { Plus, Trash2, PencilLine, Check } from '@lucide/svelte';
 
 	interface ColorPalette {
+		name: string;
+		isEditing?: boolean;
 		c1: string;
 		c2: string;
 		c3: string;
@@ -30,6 +32,8 @@
 		} else {
 			colorPalettes = [
 				{
+					name: 'Color Palette',
+					isEditing: false,
 					c1: '#F2F7E9',
 					c2: '#CCDDB4',
 					c3: '#B2D187',
@@ -92,27 +96,30 @@
 	};
 
 	const handleClick = (e: MouseEvent) => {
-		const target = e.target as HTMLDivElement;
+		if (showPicker) {
+            const target = e.target as HTMLDivElement;
+        const rect = target.getBoundingClientRect();
+			let top = rect.top + window.scrollY;
+			let left = rect.right + window.scrollX + 8;
 
-		const rect = target.getBoundingClientRect();
-		let top = rect.top + window.scrollY;
-		let left = rect.right + window.scrollX + 8;
-
-		if (!pickerElement?.contains(target) && showPicker) {
-			if (top === pickerPosition.top && left === pickerPosition.left) {
-				firstClick = true;
+			if (!pickerElement?.contains(target)) {
+				if (top === pickerPosition.top && left === pickerPosition.left) {
+					firstClick = true;
+				}
+				showPicker = false;
 			}
-			showPicker = false;
 		}
 	};
 
 	const handleAdd = () => {
 		const newPalette: ColorPalette = {
+			name: 'Color Palette',
+			isEditing: false,
 			c1: randomHexGen('FFFFFF', 'BBBBBB'),
 			c2: randomHexGen('BBBBBB', '777777'),
 			c3: randomHexGen('777777', '444444'),
 			c4: randomHexGen('444444', '111111'),
-			c5: randomHexGen('111111', '000000'),
+			c5: randomHexGen('111111', '000000')
 		};
 		colorPalettes = [...colorPalettes, newPalette];
 	};
@@ -149,7 +156,32 @@
 	<div class="w-[50%] mx-auto pt-2 pb-4 border-solid">
 		{#each colorPalettes as palette, index}
 			<div class="my-2">
-				<h1 class="text-l font-medium">Color Palette #{index + 1}</h1>
+				{#if !palette.isEditing}
+					<div class="flex">
+						<div class="min-w-[150px]">
+							<h1 class="font-medium w-full">{palette['name']}</h1>
+						</div>
+						<PencilLine
+							class="pl-2 w-[25px]"
+							onclick={async () => {
+								palette.isEditing = true;
+								await tick();
+								document.getElementById(`paletteNameInput${index}`)?.focus();
+							}}
+						/>
+					</div>
+				{:else}
+					<div class="flex">
+						<input id="paletteNameInput{index}" 
+                        class="w-[150px]" 
+                        bind:value={palette.name}
+                        onfocusout={() => {
+                            palette.isEditing = false;
+
+                        }} />
+					</div>
+				{/if}
+
 				<div class="flex flex-row justify-around items-center py-6">
 					{#each colorKeys as colorKey}
 						<div class="pr-4 flex flex-col items-center">
@@ -174,7 +206,7 @@
 							</div>
 						</div>
 					{/each}
-					<Trash2 class="mb-[40px] w-[25px] h-[25px]" onclick={() => handleDelete(index)} />
+					<Trash2 class="mb-[40px] w-[22px] h-[22px]" onclick={() => handleDelete(index)} />
 				</div>
 			</div>
 		{/each}
