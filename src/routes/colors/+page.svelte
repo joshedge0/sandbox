@@ -13,6 +13,8 @@
 		c5: string;
 	}
 
+    type ColorKey = 'c1' | 'c2' | 'c3' | 'c4' | 'c5';
+
 	onMount(async () => {
 		await import('vanilla-colorful');
 	});
@@ -44,12 +46,11 @@
 		}
 	});
 
-	const colorKeys: (keyof ColorPalette)[] = ['c1', 'c2', 'c3', 'c4', 'c5'];
-
+    const colorKeys: ColorKey[] = ['c1', 'c2', 'c3', 'c4', 'c5'];
 	let pickerElement: HTMLDivElement | null = null;
 	let showPicker = false;
 	let pickerPosition = { top: 0, left: 0 };
-	let color = '#000000';
+	let color: string = '';
 	let editingIndex: number;
 	let editingKey: keyof ColorPalette;
 	let firstClick = false;
@@ -58,7 +59,7 @@
 	const handleColorClick = (
 		e: MouseEvent | KeyboardEvent,
 		index: number,
-		colorKey: keyof ColorPalette
+		colorKey: ColorKey
 	) => {
 		const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
 		let top = rect.top + window.scrollY;
@@ -88,7 +89,7 @@
 		}
 	};
 
-	const handleInputChange = (e: Event, index: number, key: keyof ColorPalette) => {
+	const handleInputChange = (e: Event, index: number, key: ColorKey) => {
 		const inputValue = (e.target as HTMLInputElement).value.toUpperCase().replace(/[^0-9A-F]/g, '');
 		const updatedPalettes = [...colorPalettes];
 		updatedPalettes[index][key] = `#${inputValue}`;
