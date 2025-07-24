@@ -5,7 +5,7 @@
 
     <div class="mx-auto mt-[80px] w-[600px] flex flex-row justify-between">
         <a role="button" href="/colors" class="btn">colors</a>
-        <a role="button" href="/numbers" class="btn">numbers</a>
+        <a role="button" href="/chordy" class="btn">chordy</a>
     </div>
     
 </div>
