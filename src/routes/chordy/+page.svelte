@@ -144,7 +144,7 @@
 </script>
 
 <div class="flex flex-col">
-	<h1 class="mx-auto text-3xl font-bold mt-[40px] mb-24">whats my chord?</h1>
+	<h1 class="mx-auto text-3xl font-bold mt-[40px] mb-12">whats my chord?</h1>
 
 	<!-- Guitar Neck -->
 	<div class="w-fit mx-auto bg-[#c9a168] p-4 rounded-lg shadow-lg overflow-x-scroll">
