@@ -106,11 +106,11 @@
 
 							<!-- Fret position markers -->
 							{#if stringIndex === 2 && [3, 5, 9].includes(fret)}
-								<div class="absolute bottom-0 w-2 h-2 bg-amber-900 rounded-full -mb-[6px]"></div>
+								<div class="absolute bottom-0 w-2 h-2 bg-amber-900 rounded-full -mb-[10px]"></div>
 							{/if}
 							{#if stringIndex === 2 && [7, 12].includes(fret)}
-								<div class="absolute bottom-0 w-2 h-2 bg-amber-900 rounded-full -mb-[50px]"></div>
-								<div class="absolute bottom-0 w-2 h-2 bg-amber-900 rounded-full mb-[38px]"></div>
+								<div class="absolute bottom-0 w-2 h-2 bg-amber-900 rounded-full -mb-[54px]"></div>
+								<div class="absolute bottom-0 w-2 h-2 bg-amber-900 rounded-full mb-[34px]"></div>
 							{/if}
 						</div>
 					{/each}
