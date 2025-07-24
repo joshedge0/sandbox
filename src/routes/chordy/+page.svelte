@@ -1,5 +1,6 @@
 <script lang="ts">
-	const strings = ['E', 'A', 'D', 'G', 'B', 'E'];
+	let strings = ['E', 'A', 'D', 'G', 'B', 'E'];
+    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 	const frets = Array.from({ length: 13 }, (_, i) => i);
 	let selectedFrets: Record<number, number> = {};
 
@@ -9,14 +10,16 @@
 		} else {
 			selectedFrets[stringIndex] = fret;
 		}
-
 		selectedFrets = { ...selectedFrets };
 	};
 
 	const clearAll = () => {
-		console.log('clearing');
 		selectedFrets = {};
 	};
+
+    const updateString = (note:string, stringIndex:number) => {
+        strings[stringIndex] = note;
+    };
 
 	const getSelectedPattern = () => {
 		const pattern: Array<{
@@ -41,8 +44,14 @@
 
 	// Chromatic scale and hardcoded to E standard tuning
 	const getNoteAtFret = (stringIndex: number, fret: number) => {
-		const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-		const openStringNotes = [4, 9, 2, 7, 11, 4]; // E, A, D, G, B, E in semitones from C, make variable for other tunings
+        let openStringNotes = [
+            notes.indexOf(strings[0]), 
+            notes.indexOf(strings[1]), 
+            notes.indexOf(strings[2]), 
+            notes.indexOf(strings[3]), 
+            notes.indexOf(strings[4]), 
+            notes.indexOf(strings[5]), 
+        ]
 		const noteIndex = (openStringNotes[stringIndex] + fret) % 12;
 		return notes[noteIndex];
 	};
@@ -69,7 +78,11 @@
 				<div class="flex items-center mb-1 relative">
 					<!-- String names -->
 					<div class="w-12 text-center text-amber-100 font-bold bg-[#8f6d3e] rounded py-2">
-						{stringNote}
+                        <select name="stringNote" id="stringNote" bind:value={strings[stringIndex]} on:change={() => updateString(strings[stringIndex], stringIndex)}>
+                            {#each notes as note}
+                                <option value={note} selected={note === stringNote}>{note}</option>
+                            {/each}
+                        </select>                     
 					</div>
 
 					<!-- Fret line -->
