@@ -74,14 +74,6 @@
 		return notes[noteIndex];
 	};
 
-	// functions for guessing chords
-
-	// helper functions
-
-	function noteToSemitone(note: string): number {
-		return notes.indexOf(note);
-	}
-
 	function detectChord(frets: Record<number, number> ): string {
         const selectedNotes = Object.entries(frets).map(([stringIndex, fret]) => 
             getNoteAtFret(parseInt(stringIndex), fret)
@@ -127,6 +119,10 @@
 				}
 			}
 		}
+
+        function noteToSemitone(note: string): number {
+            return notes.indexOf(note);
+        }
 
 		if (allMatches.length === 0) {
 			return `Unknown chord (${uniqueNotes.join(', ')})`;
