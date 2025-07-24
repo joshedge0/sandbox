@@ -87,9 +87,6 @@
             getNoteAtFret(parseInt(stringIndex), fret)
         );
 
-        console.log('running');
-		//const selectedNotes = getSelectedPattern().map((pattern) => pattern.note);
-
 		if (selectedNotes.length === 0) return 'No notes selected';
 		if (selectedNotes.length === 1) return `${selectedNotes[0]} (single note)`;
 
@@ -115,7 +112,6 @@
 
 			// Check against each pattern
 			for (const [chordType, pattern] of Object.entries(chordPatterns)) {
-				const patternSet = new Set(pattern);
 				const intervalSet = new Set(intervals);
 
 				// Count how many pattern notes are present
@@ -123,7 +119,7 @@
 
 				// Only consider it a match if all essential chord tones are present
 				if (matchingNotes === pattern.length) {
-					// Score based on how many extra notes there are
+					// Score based on matching notes
 					const extraNotes = intervals.length - pattern.length;
 					const score = matchingNotes * 10 - extraNotes; // Prefer fewer extra notes
 
